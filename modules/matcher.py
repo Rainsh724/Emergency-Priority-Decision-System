@@ -1,3 +1,4 @@
+
 def recommend_resources(
     epi_score,
     priority_level,
@@ -14,115 +15,229 @@ def recommend_resources(
     nlp_result
 ):
     """
-    پیشنهاد منابع و تیم‌های مناسب بر اساس داده‌های فرم، خروجی NLP و امتیاز EPI
+    پیشنهاد منابع عملیاتی بر اساس:
+    - داده‌های فرم
+    - خروجی NLP
+    - امتیاز EPI
     """
 
-    teams = []
-    items = []
-    transport = []
-    actions = []
+    teams = set()
+    items = set()
+    transport = set()
+    actions = set()
 
-    # ترکیب داده دستی و NLP
-    final_has_critical_case = has_critical_case or nlp_result.get("has_critical_case", False)
-    final_has_unconscious = has_unconscious or nlp_result.get("has_unconscious", False)
-    final_has_severe_bleeding = has_severe_bleeding or nlp_result.get("has_severe_bleeding", False)
-    final_has_trapped_people = has_trapped_people or nlp_result.get("has_trapped_people", False)
-    final_route_blocked = route_blocked_manual or nlp_result.get("route_blocked", False)
+    # -------------------------
+    # Merge Manual + NLP
+    # -------------------------
 
-    final_needs_medical = (
-        nlp_result.get("needs_medical_team", False)
-        or estimated_injured > 0
-        or final_has_critical_case
-        or final_has_unconscious
-        or final_has_severe_bleeding
+    critical = (
+        has_critical_case
+        or nlp_result.get("has_critical_case", False)
     )
 
-    final_needs_water = nlp_result.get("needs_water", False) or water_shortage >= 5
-    final_needs_food = nlp_result.get("needs_food", False) or food_shortage >= 5
-    final_needs_medicine = nlp_result.get("needs_medicine", False) or medicine_shortage >= 5
-    has_vulnerable_group = nlp_result.get("has_vulnerable_group", False)
+    unconscious = (
+        has_unconscious
+        or nlp_result.get("has_unconscious", False)
+    )
 
-    # تیم‌ها
-    if final_needs_medical:
-        teams.append("تیم امداد و درمان اولیه")
+    bleeding = (
+        has_severe_bleeding
+        or nlp_result.get("has_severe_bleeding", False)
+    )
 
-    if final_has_critical_case or final_has_unconscious or final_has_severe_bleeding:
-        teams.append("تیم فوریت‌های پزشکی / آمبولانس")
+    trapped = (
+        has_trapped_people
+        or nlp_result.get("has_trapped_people", False)
+    )
 
-    if final_has_trapped_people:
-        teams.append("تیم جست‌وجو و نجات")
+    route_blocked = (
+        route_blocked_manual
+        or nlp_result.get("route_blocked", False)
+    )
 
-    if final_needs_water or final_needs_food or final_needs_medicine:
-        teams.append("تیم پشتیبانی و توزیع اقلام")
+    needs_medical = (
+        estimated_injured > 0
+        or critical
+        or unconscious
+        or bleeding
+        or nlp_result.get("needs_medical_team", False)
+    )
 
-    if has_vulnerable_group:
-        teams.append("تیم حمایت از گروه‌های آسیب‌پذیر")
+    needs_water = (
+        water_shortage >= 5
+        or nlp_result.get("needs_water", False)
+    )
 
-    if nlp_result.get("needs_psychological_help", False):
-        teams.append("تیم حمایت روانی")
+    needs_food = (
+        food_shortage >= 5
+        or nlp_result.get("needs_food", False)
+    )
 
-    # اقلام
-    if final_needs_water:
-        items.append("آب آشامیدنی")
+    needs_medicine = (
+        medicine_shortage >= 5
+        or nlp_result.get("needs_medicine", False)
+    )
 
-    if final_needs_food:
-        items.append("بسته غذایی اضطراری")
+    vulnerable_group = (
+        nlp_result.get("has_vulnerable_group", False)
+    )
 
-    if final_needs_medicine:
-        items.append("دارو و اقلام پزشکی پایه")
+    psychological_support = (
+        nlp_result.get("needs_psychological_help", False)
+    )
 
-    if estimated_injured > 0 or final_needs_medical:
-        items.append("کیت کمک‌های اولیه")
+    # -------------------------
+    # Teams
+    # -------------------------
 
-    if final_has_severe_bleeding:
-        items.append("پانسمان، باند و اقلام کنترل خونریزی")
+    if needs_medical:
+        teams.add("تیم امداد و درمان اولیه")
 
-    if final_has_trapped_people:
-        items.append("تجهیزات نجات و آواربرداری سبک")
+    if critical or unconscious or bleeding:
+        teams.add("تیم فوریت‌های پزشکی")
+        teams.add("آمبولانس")
+
+    if trapped:
+        teams.add("تیم جستجو و نجات")
+
+    if needs_water or needs_food or needs_medicine:
+        teams.add("تیم پشتیبانی و توزیع اقلام")
+
+    if vulnerable_group:
+        teams.add("تیم حمایت از گروه‌های آسیب‌پذیر")
+
+    if psychological_support:
+        teams.add("تیم حمایت روانی")
+
+    # -------------------------
+    # Items
+    # -------------------------
+
+    if needs_water:
+        items.add("آب آشامیدنی")
+
+    if needs_food:
+        items.add("بسته غذایی اضطراری")
+
+    if needs_medicine:
+        items.add("دارو و تجهیزات پزشکی پایه")
+
+    if needs_medical:
+        items.add("کیت کمک‌های اولیه")
+
+    if bleeding:
+        items.add("پانسمان و تجهیزات کنترل خونریزی")
+
+    if trapped:
+        items.add("تجهیزات جستجو و نجات")
 
     if affected_people >= 50:
-        items.append("بسته پشتیبانی جمعی برای اسکان/توزیع")
+        items.add("بسته پشتیبانی جمعی")
 
-    # وسیله/روش دسترسی
-    if final_route_blocked:
-        transport.append("خودروی امدادی ویژه مسیر دشوار")
-        transport.append("بررسی مسیر جایگزین / اعزام تیم محلی")
+    if affected_people >= 200:
+        items.add("چادر اسکان اضطراری")
+
+    # -------------------------
+    # Transport
+    # -------------------------
+
+    if route_blocked:
+        transport.add(
+            "خودروی امدادی ویژه مسیر دشوار"
+        )
+        transport.add(
+            "بررسی و استفاده از مسیر جایگزین"
+        )
     else:
-        transport.append("خودروی امدادی استاندارد")
+        transport.add(
+            "خودروی امدادی استاندارد"
+        )
 
-    if final_has_critical_case or final_has_unconscious:
-        transport.append("آمبولانس")
+    if critical or unconscious:
+        transport.add("آمبولانس")
 
-    # اقدامات فوری
+    # -------------------------
+    # Priority Based Actions
+    # -------------------------
+
     if priority_level == "بحرانی":
-        actions.append("اعزام فوری در بالاترین اولویت")
-        actions.append("اطلاع به مرکز فرماندهی بحران")
+
+        actions.add(
+            "اعزام فوری در بالاترین سطح اولویت"
+        )
+
+        actions.add(
+            "اطلاع به مرکز فرماندهی بحران"
+        )
+
+        actions.add(
+            "پایش لحظه‌ای وضعیت منطقه"
+        )
+
     elif priority_level == "بالا":
-        actions.append("اعزام سریع تیم‌های منتخب")
-        actions.append("پایش مستمر وضعیت منطقه")
+
+        actions.add(
+            "اعزام سریع تیم‌های منتخب"
+        )
+
+        actions.add(
+            "پایش مستمر وضعیت"
+        )
+
     elif priority_level == "متوسط":
-        actions.append("ثبت در صف پاسخ عملیاتی کوتاه‌مدت")
+
+        actions.add(
+            "ثبت در صف عملیات کوتاه‌مدت"
+        )
+
     else:
-        actions.append("ثبت و پایش گزارش")
 
-    if final_has_trapped_people:
-        actions.append("هماهنگی فوری با تیم نجات")
+        actions.add(
+            "ثبت و پایش گزارش"
+        )
 
-    if final_has_unconscious or final_has_severe_bleeding:
-        actions.append("اولویت انتقال مصدومان بدحال")
+    # -------------------------
+    # Additional Actions
+    # -------------------------
 
-    if has_vulnerable_group:
-        actions.append("توجه ویژه به کودکان، سالمندان و بیماران")
+    if trapped:
+        actions.add(
+            "هماهنگی فوری با تیم نجات"
+        )
 
-    # حذف موارد تکراری
-    teams = list(dict.fromkeys(teams))
-    items = list(dict.fromkeys(items))
-    transport = list(dict.fromkeys(transport))
-    actions = list(dict.fromkeys(actions))
+    if unconscious or bleeding:
+        actions.add(
+            "اولویت انتقال مصدومان بدحال"
+        )
+
+    if vulnerable_group:
+        actions.add(
+            "رسیدگی ویژه به کودکان و سالمندان"
+        )
+
+    # -------------------------
+    # High EPI Enhancements
+    # -------------------------
+
+    if epi_score >= 85:
+
+        actions.add(
+            "اعلام وضعیت فوق‌العاده عملیاتی"
+        )
+
+        teams.add(
+            "فرمانده عملیات میدانی"
+        )
+
+    if epi_score >= 90:
+
+        actions.add(
+            "آماده‌سازی ظرفیت پشتیبان منطقه‌ای"
+        )
 
     return {
-        "teams": teams,
-        "items": items,
-        "transport": transport,
-        "actions": actions
+        "teams": sorted(list(teams)),
+        "items": sorted(list(items)),
+        "transport": sorted(list(transport)),
+        "actions": sorted(list(actions))
     }
