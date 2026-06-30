@@ -334,3 +334,99 @@ This project was developed for academic purposes as part of an Artificial Intell
 *AI Supporting Faster and Smarter Emergency Response*
 
 </div>
+
+---
+
+# 📌 Project Highlights
+
+✔ AI-assisted emergency report analysis
+
+✔ Emergency Priority Index (EPI) scoring
+
+✔ Intelligent rescue resource recommendation
+
+✔ Persian Natural Language Processing
+
+✔ SQLite data persistence
+
+✔ Interactive Streamlit dashboard
+
+✔ Data visualization and analytics
+
+✔ Modular and extensible architecture
+
+---
+
+# 📈 Current Project Status
+
+| Module                  |    Status   |
+| ----------------------- | :---------: |
+| User Interface          | ✅ Completed |
+| Persian NLP Engine      | ✅ Completed |
+| EPI Calculation         | ✅ Completed |
+| Resource Recommendation | ✅ Completed |
+| SQLite Database         | ✅ Completed |
+| Dashboard & Analytics   | ✅ Completed |
+| Testing                 | ✅ Completed |
+| Documentation           | ✅ Completed |
+
+---
+
+# 🎯 Project Goals
+
+The EPDS platform aims to assist emergency operation centers by transforming raw emergency reports into actionable decisions.
+
+Instead of manually reviewing every report, emergency managers receive:
+
+* Priority level
+* Recommended rescue teams
+* Suggested emergency supplies
+* Transportation recommendations
+* Operational actions
+
+This approach helps reduce response time and improve resource allocation during disasters.
+
+---
+
+# 📚 Academic Context
+
+This project was developed as part of an **Artificial Intelligence** course.
+
+The implementation focuses on combining:
+
+* Artificial Intelligence
+* Decision Support Systems
+* Natural Language Processing
+* Emergency Management
+* Humanitarian Computing
+
+to address real-world disaster response challenges.
+
+---
+
+# 🔮 Future Improvements
+
+Future versions of EPDS may include:
+
+* Machine Learning-based EPI prediction
+* Transformer-based Persian NLP (ParsBERT)
+* Live map integration
+* Weather API integration
+* SMS & Email notifications
+* Rescue team management
+* Volunteer coordination
+* Mobile application
+* Cloud deployment
+* REST API
+
+---
+
+<div align="center">
+
+## ❤️ Thank You
+
+Thank you for visiting the **Emergency Priority Decision System (EPDS)** repository.
+
+If you found this project interesting, consider giving it a ⭐ on GitHub.
+
+</div>
