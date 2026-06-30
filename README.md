@@ -1,3 +1,5 @@
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge&logo=streamlit)](https://emergency-priority-decision-system.streamlit.app/)
+
 <div align="center">
 
 # 🚨 Emergency Priority Decision System (EPDS)
